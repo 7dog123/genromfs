@@ -1,6 +1,14 @@
 
 # Makefile for the genromfs program.
 
+
+# Modified to build on MINGW
+ifeq ($(OS), Windows_NT)
+	LDLIBS = -lshlwapi -lws2_32
+else
+#	Nothing
+endif
+
 all: genromfs
 
 PACKAGE = genromfs
@@ -16,15 +24,11 @@ FILES = COPYING NEWS ChangeLog Makefile \
  readme-kernel-patch genrommkdev romfs.txt \
  checkdist
 
-prefix = /usr
-bindir = $(prefix)/bin
+prefix = $(PS2SDK)
+bindir = $(PS2SDK)/bin
 mandir = $(prefix)/man
 
 genromfs: genromfs.o
-	$(CC) $(LDFLAGS) genromfs.o -o genromfs
-
-.c.o:
-	$(CC) $(CFLAGS) $< -c -o $@
 
 clean:
 	rm -f genromfs *.o
@@ -42,11 +46,11 @@ dist:
 	tar --owner=root --group=root -zcf $(DISTDIR).tar.gz $(DISTDIR);
 	rm -rf $(DISTDIR)
 
-install: all install-bin install-man
+install: all install-bin
 
 install-bin:
 	mkdir -p $(PREFIX)$(bindir)
-	install -m 755 genromfs $(PREFIX)$(bindir)/
+	install -m644 genromfs $(PREFIX)$(bindir)/
 
 install-man:
 	# genromfs 0.5 installed the man page in this file,
